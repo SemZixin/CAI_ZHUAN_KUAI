@@ -68,17 +68,17 @@ class MyGame(aa.Window):
                                                          platforms=platforms)
         # whether is on brick
         self.pre_is_on_brick = self.is_on_brick()
-        # br
+        # zero bricks
         self.zero_brick_list = aa.SpriteList()
-        # 游戏状态
+        # game status
         self.game_status = aa.Sprite()
         self.game_status.position = screen_width // 2, screen_height // 2
         self.game_status.scale = 0.5
         self.game_status.text = "游戏中"
 
-        # 玩家相机
+        # player camera
         self.player_camera = aa.Camera(screen_width, screen_height)
-        # 游戏状态相机
+        # game status camera
         self.game_status_camera = aa.Camera(screen_width, screen_height)
 
     def on_draw(self):
@@ -129,36 +129,36 @@ class MyGame(aa.Window):
     def deal_jump(self):
         current = self.is_on_brick()
         if not self.pre_is_on_brick and current:
-            # 和砖块交互
+            # interaction with bricks
             for brick in current:
                 brick.properties["num"] -= 1
-                # 更换砖块
+                # change brick
                 brick_image = f"images/brick{brick.properties['num']}.png"
                 brick.texture = aa.load_texture(brick_image)
-                # 统计数字为0砖块
+                # statistic zero bricks
                 if brick.properties["num"] == 0:
                     self.zero_brick_list.append(brick)
-        # 从地上开始跳跃，清除数字为0的砖块
+        # delete zero bricks
         elif self.pre_is_on_brick and not current:
             for brick in self.zero_brick_list:
                 brick.kill()
         self.pre_is_on_brick = current
 
     def deal_game_status(self):
-        # 过关
+        # pass
         if len(self.scene.name_mapping["砖块"]) == 0:
             self.game_status.text = "过关"
-            # 通关
+            # win
             if self.level < max_level:
                 self.level += 1
                 self.setup()
             else:
                 self.game_status.text = "通关"
-        # 失败
+        # lose
         if self.player.top < 0 or self.is_collide_barrier():
             self.game_status.text = "失败"
             self.setup()
-        # 更换游戏状态图片
+        # change game status pic
         if game_status_image[self.game_status.text] != "空":
             self.game_status.texture = aa.load_texture(game_status_image[self.game_status.text])
 
@@ -170,7 +170,7 @@ class MyGame(aa.Window):
     def move_player_camera(self):
         camera_x = self.player.center_x - screen_width // 2
         camera_y = self.player.center_y - screen_height // 2
-        # 相机位置不超过左下边界
+        # limit camera position
         if camera_x < 0:
             camera_x = 0
         if camera_y < 0:
